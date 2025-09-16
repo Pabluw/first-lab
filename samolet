@@ -1,0 +1,264 @@
+
+
+
+interface IEngine {
+    // Интерфейс IEngine - слабая связь.  Samolet зависит от этого интерфейса, а не от конкретной реализации dvigatelya
+    void zapustit();
+    void ostanovit();
+    void ustanovitTyagu(int uroven);
+}
+
+class TurbojetDvigatel implements IEngine {
+    // TurbojetDvigatel имплементирует IEngine.
+    // Slabyaya svyaz', так kak Samolet rabotaet s interfeysom.
+    private String tip = "Turbojet";
+    private int tyaga;
+    private boolean rabotaet;
+
+    public TurbojetDvigatel(int tyaga) {
+        // Konstruktor TurbojetDvigatel
+        this.tyaga = tyaga;
+        this.rabotaet = false;
+    }
+
+    @Override
+    public void zapustit() {
+        if (!rabotaet) {
+            System.out.println("Dvigatel zapushen (tip: " + tip + ", tyaga: " + tyaga + ").");
+            rabotaet = true;
+        } else {
+            System.out.println("Dvigatel uzhe rabotaet.");
+        }
+    }
+
+    @Override
+    public void ostanovit() {
+        if (rabotaet) {
+            System.out.println("Dvigatel ostanovlen.");
+            rabotaet = false;
+        } else {
+            System.out.println("Dvigatel uzhe ostanovlen.");
+        }
+    }
+
+    @Override
+    public void ustanovitTyagu(int uroven) {
+        System.out.println("Tyaga dvigatelya ustanovlena na uroven: " + uroven);
+    }
+}
+
+class Krylo {
+    // Krylo - nezavisimyj klass.  Samolet s nim vzaimodeystvuet cherez svoi metody
+    private double razmahKryla;
+    private double ploshadKryla;
+    private boolean zakrylkiVypusheny;
+
+    public Krylo(double razmahKryla, double ploshadKryla) {
+        // Konstruktor Kryla
+        this.razmahKryla = razmahKryla;
+        this.ploshadKryla = ploshadKryla;
+        this.zakrylkiVypusheny = false;
+    }
+
+    public void vypustitZakrylki() {
+        zakrylkiVypusheny = true;
+        System.out.println("Zakrylki vypusheny.");
+    }
+
+    public void ubratZakrylki() {
+        zakrylkiVypusheny = false;
+        System.out.println("Zakrylki ubrany.");
+    }
+}
+
+class Fuzelyazh {
+    // Fuzelyazh - nezavisimyj klass.  Samolet vzaimodeystvuet cherez svoi metody
+    private double dlina;
+    private double shirina;
+    private String material;
+
+    public Fuzelyazh(double dlina, double shirina, String material) {
+        // Konstruktor Fuzelyazha
+        this.dlina = dlina;
+        this.shirina = shirina;
+        this.material = material;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+}
+
+class Shassi {
+    // Shassi - nezavisimyj klass.  Samolet vzaimodeystvuet cherez svoi metody
+    private String tip;
+    private boolean vypusheno;
+
+    public Shassi(String tip) {
+        // Konstruktor Shassi
+        this.tip = tip;
+        this.vypusheno = false;
+    }
+
+    public void vypustit() {
+        vypusheno = true;
+        System.out.println("Shassi vypusheny.");
+    }
+
+    public void ubrat() {
+        vypusheno = false;
+        System.out.println("Shassi ubrany.");
+    }
+}
+
+class SistemaUpravleniya {
+    // SistemaUpravleniya - klass, ot kotorogo zavisyat metody Samoleta.
+    private double tangazh;
+    private double kren;
+    private double ryskanie;
+
+    public SistemaUpravleniya() {
+        // Konstruktor SistemaUpravleniya
+        this.tangazh = 0;
+        this.kren = 0;
+        this.ryskanie = 0;
+    }
+
+    public void ustanovitTangazh(double tangazh) {
+        this.tangazh = tangazh;
+        System.out.println("Tangazh ustanovlen na: " + tangazh + " gradusov.");
+    }
+
+    public void ustanovitKren(double kren) {
+        this.kren = kren;
+        System.out.println("Kren ustanovlen na: " + kren + " gradusov.");
+    }
+
+    public void ustanovitRyskanie(double ryskanie) {
+        this.ryskanie = ryskanie;
+        System.out.println("Ryskanie ustanovleno na: " + ryskanie + " gradusov.");
+    }
+}
+
+class Avionika {
+    // Avionika - nezavisimyj klass.  Samolet vzaimodeystvuet cherez svoi metody
+    private boolean avtopilotVklyuchen;
+
+    public Avionika() {
+        // Konstruktor Avioniki
+        this.avtopilotVklyuchen = false;
+    }
+
+    public void vklyuchitAvtopilot() {
+        avtopilotVklyuchen = true;
+        System.out.println("Avtopilot vklyuchen.");
+    }
+
+    public void vyklyuchitAvtopilot() {
+        avtopilotVklyuchen = false;
+        System.out.println("Avtopilot vyklyuchen.");
+    }
+
+    public double poluchitDannyeOVisote() {
+        // Real logic to get height data
+        return Math.random() * 10000; // Primer: sluchajnaya vysota
+    }
+
+    public double poluchitDannyeOSkorosti() {
+        // Real logic to get speed data
+        return Math.random() * 800; // Primer: sluchajnaya skorost'
+    }
+}
+
+// ----- Super-klass -----
+
+class Samolet {
+    // Samolet - osnovnoj klass, ot kotorogo zavisit vsya sistema. Silnaya svyaz' s podklassami cherez agregatsiyu.
+    private IEngine[] dvigateli; // Zavisimost' ot IEngine (interfejs - slabyaya svyaz')
+    private Krylo[] krylya;      // Krylya - chasti samoleta
+    private Fuzelyazh fuzelyazh;    // Fuzelyazh - chasti samoleta
+    private Shassi shassi;       // Shassi - chasti samoleta
+    private SistemaUpravleniya sistemaUpravleniya; //SistemaUpravleniya - chasti samoleta
+    private Avionika avionika;     // Avionika - chasti samoleta
+
+    public Samolet(IEngine[] dvigateli, Krylo[] krylya, Fuzelyazh fuzelyazh, Shassi shassi, SistemaUpravleniya sistemaUpravleniya, Avionika avionika) {
+        // Konstruktor Samoleta.  Vse chasti samoleta peredayutsya cherez konstruktor (DI).
+        this.dvigateli = dvigateli;
+        this.krylya = krylya;
+        this.fuzelyazh = fuzelyazh;
+        this.shassi = shassi;
+        this.sistemaUpravleniya = sistemaUpravleniya;
+        this.avionika = avionika;
+    }
+
+    public void zapustitDvigateli() {
+        // Metod zapuskayet dvigateli
+        for (IEngine dvigatel : dvigateli) {
+            dvigatel.zapustit(); // Zavisimost' ot IEngine
+        }
+    }
+
+    public void ostanovitDvigateli() {
+        // Metod ostanavlivaet dvigateli
+        for (IEngine dvigatel : dvigateli) {
+            dvigatel.ostanovit();  // Zavisimost' ot IEngine
+        }
+    }
+
+    public void vypustitShassi() {
+        // Metod vypuskayet shassi. Zavisimost' ot klassa Shassi
+        shassi.vypustit();
+    }
+
+    public void ubratShassi() {
+        // Metod ubiraet shassi. Zavisimost' ot klassa Shassi
+        shassi.ubrat();
+    }
+
+    public void ustanovitTangazh(double tangazh) {
+        // Metod upravleniya tangazhem. Zavisimost' ot SistemaUpravleniya
+        sistemaUpravleniya.ustanovitTangazh(tangazh);
+    }
+
+    public String getMaterialFuzelyazha() {
+        // Metod dlya polucheniya materiala fuzelyazha.  Zavisimost' ot Fuzelyazh
+        return fuzelyazh.getMaterial();
+    }
+
+    public double poluchitVisotu() {
+        // Metod dlya polucheniya vysoty.  Zavisimost' ot Avionika
+        return avionika.poluchitDannyeOVisote();
+    }
+}
+
+// ----- Main -----
+
+public class Main {
+    public static void main(String[] args) {
+        // Sozdanie chastey samoleta.  Eto mesto, gde proishodit vzaimodeystvie i inicializaciya klassov.
+        IEngine[] dvigateli = new IEngine[2];
+        dvigateli[0] = new TurbojetDvigatel(10000); // Zavisimost' ot TurbojetDvigatel
+        dvigateli[1] = new TurbojetDvigatel(10000); // Zavisimost' ot TurbojetDvigatel
+
+        Krylo[] krylya = new Krylo[2];
+        krylya[0] = new Krylo(30, 50);       // Zavisimost' ot Krylo
+        krylya[1] = new Krylo(30, 50);       // Zavisimost' ot Krylo
+
+        Fuzelyazh fuzelyazh = new Fuzelyazh(50, 5, "Aluminium");   // Zavisimost' ot Fuzelyazh
+        Shassi shassi = new Shassi("Trekhoпорное");           // Zavisimost' ot Shassi
+        SistemaUpravleniya sistemaUpravleniya = new SistemaUpravleniya();   // Zavisimost' ot SistemaUpravleniya
+        Avionika avionika = new Avionika();                    // Zavisimost' ot Avionika
+
+        // Sozdanie samoleta
+        Samolet samolet = new Samolet(dvigateli, krylya, fuzelyazh, shassi, sistemaUpravleniya, avionika); // Silnaya svyaz', tak kak sozdanie Samoleta trebuet vse chasti.
+
+        // Demonstratsiya raboty samoleta
+        System.out.println("Material fuzelyazha: " + samolet.getMaterialFuzelyazha());
+        samolet.zapustitDvigateli();
+        samolet.vypustitShassi();
+        samolet.ustanovitTangazh(5);
+        System.out.println("Visota samoleta: " + samolet.poluchitVisotu());
+        samolet.ubratShassi();
+        samolet.ostanovitDvigateli();
+    }
+}
